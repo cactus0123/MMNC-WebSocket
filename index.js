@@ -18,6 +18,10 @@ io.on("connection", (socket) => {
   socket.emit("server_message", "You are now connected to the server!");
 });
 
+app.get("/", (req, res) => {
+  res.send("Websocket Server for MMNC");
+});
+
 http.listen(process.env.PORT || 3000, () => {
   console.log("Server listening on port 3000");
 });
