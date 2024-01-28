@@ -16,11 +16,11 @@ io.on("connection", (socket) => {
 
   // Handle incoming audio chunks
   socket.on("pushChunks", (chunk) => {
-    console.log("Processing chunk: ", chunk[1]);
-    var buffer = Buffer.from(chunk[0]);
-    console.log(`Received audio chunk${chunk[1]}: `, buffer);
+    console.log("Processing chunk: ", chunk.count);
+    var buffer = Buffer.from(chunk.data);
+    console.log(`Received audio chunk${chunk.count}: `, buffer);
     audioStream.write(buffer);
-    console.log("finsihsed processing chunk: ", chunk[1]);
+    console.log("finsihsed processing chunk: ", chunk.count);
   });
 
   audioStream.on("data", (chunk) => {
