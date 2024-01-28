@@ -7,8 +7,6 @@ const io = require("socket.io")(http);
 // Serve static files
 app.use(express.static("public"));
 
-let audioChunks = [];
-
 let audioStream = new stream.PassThrough();
 
 io.on("connection", (socket) => {
@@ -20,7 +18,6 @@ io.on("connection", (socket) => {
   socket.on("pushChunks", (chunk) => {
     var buffer = Buffer.from(chunk);
     console.log("Received audio chunks: ", chunk);
-    audioChunks.push(buffer);
     audioStream.write(buffer);
   });
 
