@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-
+const stream = require("stream");
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 
@@ -9,19 +9,26 @@ app.use(express.static("public"));
 
 let audioChunks = [];
 
+let audioStream = new stream.PassThrough();
+
 io.on("connection", (socket) => {
   console.log("Client Connected");
 
   socket.emit("server_message", "You are now connected to the server!");
 
-  //Handle incoming audio chunks
+  // Handle incoming audio chunks
   socket.on("pushChunks", (chunk) => {
-    //var buffer = Buffer.from(chunk);
+    var buffer = Buffer.from(chunk);
     console.log("Received audio chunks: ", chunk);
-    //audioChunks.push(buffer);
+    audioChunks.push(buffer);
+    audioStream.write(buffer);
   });
 
   socket.on("audioStarted", (msg) => {
+    console.log("Received Message: ", msg);
+  });
+
+  socket.on("audioEnded", (msg) => {
     console.log("Received Message: ", msg);
   });
 });
