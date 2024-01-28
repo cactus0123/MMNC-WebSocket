@@ -24,6 +24,10 @@ io.on("connection", (socket) => {
     audioStream.write(buffer);
   });
 
+  audioStream.on("data", (chunk) => {
+    console.log("Received from socket:", chunk);
+  });
+
   socket.on("audioStarted", (msg) => {
     console.log("Received Message: ", msg);
   });
