@@ -12,28 +12,39 @@ let audioStream = new stream.PassThrough();
 io.on("connection", (socket) => {
   console.log("Client Connected");
 
-  socket.emit("server_message", "You are now connected to the server!");
+  socket.emit(
+    "server_message",
+    `You are now connected to the server as ${role}`
+  );
 
-  // Handle incoming audio chunks
-  socket.on("pushChunks", (chunk) => {
-    console.log("Processing chunk: ", chunk.count);
-    var buffer = Buffer.from(chunk.data);
-    console.log(`Received audio chunk${chunk.count}: `, buffer);
-    audioStream.write(buffer);
-    console.log("finsihsed processing chunk: ", chunk.count);
-  });
+  socket.on("register", (role) => {
+    console.log("Registered as: ", role);
 
-  audioStream.on("data", (chunk) => {
-    console.log("Received from socket:", chunk);
-  });
+    if (role === "pusher") {
+      // Handle incoming audio chunks
+      socket.on("pushChunks", (chunk) => {
+        console.log("Processing chunk: ", chunk.count);
+        var buffer = Buffer.from(chunk.data);
+        console.log(`Received audio chunk${chunk.count}: `, buffer);
+        audioStream.write(buffer);
+        console.log("finsihsed processing chunk: ", chunk.count);
+      });
 
-  socket.on("audioStarted", (msg) => {
-    console.log("Received Message: ", msg);
-  });
+      audioStream.on("data", (chunk) => {
+        console.log("Received from socket:", chunk);
+      });
 
-  socket.on("audioEnded", (msg) => {
-    console.log("Received Message: ", msg);
-    audioStream = new stream.PassThrough();
+      socket.on("audioStarted", (msg) => {
+        console.log("Received Message: ", msg);
+      });
+
+      socket.on("audioEnded", (msg) => {
+        console.log("Received Message: ", msg);
+        audioStream = new stream.PassThrough();
+      });
+    } else if (role === "receiver") {
+      console.log("monkey");
+    }
   });
 });
 
