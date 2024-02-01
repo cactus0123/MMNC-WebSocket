@@ -39,6 +39,8 @@ io.on("connection", (socket) => {
 
       socket.on("audioEnded", (msg) => {
         console.log("Received Message: ", msg);
+        audioStream.removeAllListeners();
+        audioStream.end();
         audioStream = new stream.PassThrough();
       });
     } else if (role === "receiver") {
