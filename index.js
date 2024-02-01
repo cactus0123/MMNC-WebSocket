@@ -10,15 +10,14 @@ app.use(express.static("public"));
 let audioStream = new stream.PassThrough();
 
 io.on("connection", (socket) => {
-  console.log("Client Connected");
-
-  socket.emit(
-    "server_message",
-    `You are now connected to the server as ${role}`
-  );
+  console.log("A user connected");
 
   socket.on("register", (role) => {
-    console.log("Registered as: ", role);
+    socket.emit(
+      "server_message",
+      "You are now connected to the server as " + role
+    );
+    console.log("Registered as:", role);
 
     if (role === "pusher") {
       // Handle incoming audio chunks
