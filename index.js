@@ -8,6 +8,7 @@ const io = require("socket.io")(http);
 app.use(express.static("public"));
 
 let audioStream = new stream.PassThrough();
+let recordingEnded = false;
 
 io.on("connection", (socket) => {
   console.log("A user connected");
@@ -22,11 +23,13 @@ io.on("connection", (socket) => {
     if (role === "pusher") {
       // Handle incoming audio chunks
       socket.on("pushChunks", (chunk) => {
-        console.log("Processing chunk: ", chunk.count);
-        var buffer = Buffer.from(chunk.data);
-        console.log(`Received audio chunk${chunk.count}: `, buffer);
-        audioStream.write(buffer);
-        console.log("finsihsed processing chunk: ", chunk.count);
+        if (!recordingEnded) {
+          console.log("Processing chunk: ", chunk.count);
+          var buffer = Buffer.from(chunk.data);
+          console.log(`Received audio chunk${chunk.count}: `, buffer);
+          audioStream.write(buffer);
+          console.log("finsihsed processing chunk: ", chunk.count);
+        }
       });
 
       audioStream.on("data", (chunk) => {
@@ -39,9 +42,11 @@ io.on("connection", (socket) => {
 
       socket.on("audioEnded", (msg) => {
         console.log("Received Message: ", msg);
+        recordingEnded = true;
         audioStream.removeAllListeners();
         audioStream.end();
         audioStream = new stream.PassThrough();
+        recordingEnded = false;
       });
     } else if (role === "receiver") {
       console.log("monkey");
