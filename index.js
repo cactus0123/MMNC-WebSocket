@@ -50,6 +50,9 @@ io.on("connection", (socket) => {
       });
     } else if (role === "receiver") {
       console.log("monkey");
+      audioStream.on("data", (chunk) => {
+        socket.emit("audioStream", chunk);
+      });
     }
   });
 });
