@@ -27,7 +27,7 @@ io.on("connection", (socket) => {
           console.log("Processing chunk: ", chunk.count);
           var buffer = Buffer.from(chunk.data);
           console.log(`Received audio chunk${chunk.count}: `, buffer);
-          audioStream.write(buffer);
+          audioStream.write({ data: buffer, count: chunk.count });
           console.log("finsihsed processing chunk: ", chunk.count);
         }
       });
