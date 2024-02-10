@@ -27,8 +27,9 @@ io.on("connection", (socket) => {
           console.log("Processing chunk: ", chunk.count);
           var buffer = Buffer.from(chunk.data);
           console.log(`Received audio chunk${chunk.count}: `, buffer);
-          audioStream.write({ data: buffer, count: chunk.count });
-          console.log("finsihsed processing chunk: ", chunk.count);
+          buffer.chunkNumber = chunk.count;
+          audioStream.write(buffer);
+          console.log("finished processing chunk: ", chunk.count);
         }
       });
 
@@ -51,7 +52,11 @@ io.on("connection", (socket) => {
     } else if (role === "receiver") {
       console.log("monkey");
       audioStream.on("data", (chunk) => {
-        socket.emit("audioStream", chunk);
+        const audioData = {
+          count: chunk.chunkNumber,
+          data: chunk,
+        };
+        socket.emit("audioStream", audioData);
       });
     }
   });
