@@ -28,9 +28,10 @@ io.on("connection", (socket) => {
           var buffer = Buffer.from(chunk.data);
           //console.log(`Received audio chunk${chunk.count}: `, buffer);
           buffer.chunkNumber = chunk.count;
+          console.log("received time: ", chunk.time);
           buffer.sentTime = parseInt(chunk.time, 10);
+          console.log("parsed time: ", chunk.time);
           audioStream.write(buffer);
-          console.log("sent time: ", chunk.time);
           //console.log("finished processing chunk: ", chunk.count);
         }
       });
@@ -56,8 +57,8 @@ io.on("connection", (socket) => {
       audioStream.on("data", (buffer) => {
         const audioData = {
           count: buffer.chunkNumber,
-          data: buffer,
           sentTime: buffer.sentTime,
+          data: buffer,
         };
         console.log("pushing time: ", buffer.sentTime);
         socket.emit("audioStream", audioData);
