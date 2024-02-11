@@ -24,18 +24,18 @@ io.on("connection", (socket) => {
       // Handle incoming audio chunks
       socket.on("pushChunks", (chunk) => {
         if (!recordingEnded) {
-          console.log("Processing chunk: ", chunk.count);
+          //console.log("Processing chunk: ", chunk.count);
           var buffer = Buffer.from(chunk.data);
-          console.log(`Received audio chunk${chunk.count}: `, buffer);
+          //console.log(`Received audio chunk${chunk.count}: `, buffer);
           buffer.chunkNumber = chunk.count;
           buffer.sentTime = chunk.time;
           audioStream.write(buffer);
-          console.log("finished processing chunk: ", chunk.count);
+          //console.log("finished processing chunk: ", chunk.count);
         }
       });
 
       audioStream.on("data", (chunk) => {
-        console.log("Received from socket:", chunk);
+        //console.log("Received from socket:", chunk);
       });
 
       socket.on("audioStarted", (msg) => {
@@ -52,12 +52,13 @@ io.on("connection", (socket) => {
       });
     } else if (role === "receiver") {
       console.log("monkey");
-      audioStream.on("data", (chunk) => {
+      audioStream.on("data", (buffer) => {
         const audioData = {
-          count: chunk.chunkNumber,
-          data: chunk,
-          sentTime: chunk.sentTime,
+          count: buffer.chunkNumber,
+          data: buffer,
+          sentTime: buffer.sentTime,
         };
+        console.log("sent time: ", buffer.sentTime);
         socket.emit("audioStream", audioData);
       });
     }
